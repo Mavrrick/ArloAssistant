@@ -19,6 +19,7 @@ definition(
     author: "Mavrrick",
     description: "Trigger a recording based on device action. Repeat if enabled until condition has passed.",
     category: "My Apps",
+    parent: "Mavrrick:Arlo Assistant",
 	iconUrl: "https://farm9.staticflickr.com/8632/16461422990_e5121d68ee_o.jpg",
 	iconX2Url: "https://farm9.staticflickr.com/8632/16461422990_e5121d68ee_o.jpg",
 	iconX3Url: "https://farm9.staticflickr.com/8632/16461422990_e5121d68ee_o.jpg"
