@@ -40,11 +40,11 @@ preferences {
          }
         section ("Arlo Smartthings Mode management"){
 			app(name: "arloSmartthingsMode", appName: "Arlo Smartthings Mode", namespace: "Mavrrick", title: "Create Arlo Smarthings integration Mode", multiple: true)
-			app(name: "arloTriggerRecord", appName: "Arlo Triggered Record", namespace: "Mavrrick", title: "Create a triggered event that will create recording", multiple: true)
-            app(name: "arloTriggerRecordRepeat", appName: "Arlo Triggered Repeat Recorder", namespace: "Mavrrick", title: "Create a triggered event that will record until the event is over", multiple: true)            
+//			app(name: "arloTriggerRecord", appName: "Arlo Triggered Record", namespace: "Mavrrick", title: "Create a triggered event that will create recording", multiple: true)
+//            app(name: "arloTriggerRecordRepeat", appName: "Arlo Triggered Repeat Recorder", namespace: "Mavrrick", title: "Create a triggered event that will record until the event is over", multiple: true)            
             }
         section ("Arlo Camera Management"){
-            app(name: "arloImageRefresh", appName: "Arlo Image/Clip Refresh", namespace: "Mavrrick", title: "Generate a clip to refresh the image tile on the camera", multiple: true)
+//            app(name: "arloImageRefresh", appName: "Arlo Image/Clip Refresh", namespace: "Mavrrick", title: "Generate a clip to refresh the image tile on the camera", multiple: true)
 		}
     }
 }
