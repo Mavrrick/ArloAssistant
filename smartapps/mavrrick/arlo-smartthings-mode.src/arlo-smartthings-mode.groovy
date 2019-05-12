@@ -327,6 +327,13 @@ def modeTriggerEvt(evt){
     else
     log.debug "Virtual swtich is off and not in proper state for mode"
     }
+    else 
+    log.debug "No Mode critera defined. Running actions"
+    	if (recordCameras) {
+    		arloCapture()
+    		}
+    		if (notifyEnable){
+    		sendnotification() }
     }
 
 
