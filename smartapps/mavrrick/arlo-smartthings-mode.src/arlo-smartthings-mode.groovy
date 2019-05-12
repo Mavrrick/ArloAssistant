@@ -45,13 +45,14 @@ def mainPage()
         }
 		section("What will determine when this mode is active")
 		{
-        	input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
+         	paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
+ 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
         	paragraph "The below switches will determine if this mode will validate against Alarm system mode."       	
 			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
 			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
 			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
-            input "virtualswitchstate", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
-			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
+            input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
+//			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
 		}
 
 		section("Define triggers for integration mode action")
@@ -104,7 +105,7 @@ def modeCameraSetup()
 	{
     	section("Camera setup (Optional)"){
         	input "recordCameras", "bool", title: "Enable Camera recording?", description: "This switch will enable cameras to record on alarm events.", defaultValue: false, required: true, multiple: false
-			input "recordRepeat", "bool", title: "Enable Camare to trigger recording as long as arlarm is occuring?", description: "This switch will enable cameras generate new clips as long as there is a active alarm.", defaultValue: false, required: true, multiple: false
+//			input "recordRepeat", "bool", title: "Enable Camare to trigger recording as long as arlarm is occuring?", description: "This switch will enable cameras generate new clips as long as there is a active alarm.", defaultValue: false, required: true, multiple: false
 			input "cameras", "capability.videoCapture", multiple: true, required: false
         	input name: "clipLength", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
         }
@@ -119,7 +120,7 @@ def notificationSetup()
 	dynamicPage(name: "notificationSetup", title: "Notification setup", nextPage: "mainPage")
 	{
         section("Via a push notification and/or an SMS message"){
-        input "notifyEnable", "bool", title: "Do you want to use this rule to record", required: false
+        input "notifyEnable", "bool", title: "Do you want to use this mode to send notifications.", required: false
         input "message", "text", title: "Send this message if activity is detected.", required: false
         }
         section("Via a push notification and/or an SMS message?"){
@@ -171,18 +172,160 @@ def initialize() {
 }
 
 def modeTriggerEvt(evt){
-	log.debug "${evt.value} Event has occured. Checking to see if in current mode"
-    // Get the current Mode
-	if (stmode) {
-    def curMode = location.currentMode
-    if (curMode == stmode) {
-    log.debug "Mode has been validated. Executing Action"
-    if (recordCameras) {
-    arloCapture()
-    	}
-    if (notifyEnable){
-    	sendnotification() }
+	log.debug "${evt.value} Event has occured. Checking to see if in mode for this Smartapp"
+	if (stmode && shmUseState) {
+    	def curMode = location.currentMode
+            if (curMode == stmode) {
+    		def alarmState = location.currentState("alarmSystemStatus")?.value
+        	if (alarmState == "stay" && alarmtype2 == 1) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+			    if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+                    }
+        	else if (alarmState == "away" && alarmtype2 == 2) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+            else if (alarmState == "off" && alarmtype2 == 3) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+                if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+            }
+            else 
+            log.debug "Smartthings mode did not validate. This action does not apply to this mode"
+            }
+        else if (stmode && adtUseState) {
+           	def curMode = location.currentMode
+            if (curMode == stmode) {
+    			def alarmState = panel.currentSecuritySystemStatus
+        	if (alarmState == "armedStay" && alarmtype2 == 1) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+			    if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+                    }
+        	else if (alarmState == "armedAway" && alarmtype2 == 2) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+        	else if (alarmState == "disarmed" && alarmtype2 == 3) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+            }
+            else 
+            log.debug "Smartthings mode did not validate. This action does not apply to this mode"
+        }
+		else if (shmUseState) {
+    	def alarmState = location.currentState("alarmSystemStatus")?.value
+        	if (alarmState == "stay" && alarmtype2 == 1) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+			    if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+                    }
+        	else if (alarmState == "away" && alarmtype2 == 2) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+            else if (alarmState == "off" && alarmtype2 == 3) {
+        	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+            }
+	else if (adtUseState) {
+    	def alarmState = panel.currentSecuritySystemStatus
+        	if (alarmState == "armedStay" && alarmtype2 == 1) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+			    if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+                    }
+        	else if (alarmState == "armedAway" && alarmtype2 == 2) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+        	else if (alarmState == "disarmed" && alarmtype2 == 3) {
+        	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+        		if (recordCameras) {
+    				arloCapture()
+    				}
+    			if (notifyEnable) {
+    				sendnotification() 
+                    }
+        	}
+        }
+    else if (stmode) {
+    	def curMode = location.currentMode
+    		if (curMode == stmode) {
+    			log.debug "Smartthings mode has been validated. Executing Action"
+    		if (recordCameras) {
+    			arloCapture()
+    			}
+    		if (notifyEnable){
+    			sendnotification() }
+    		}
     }
+    else if (virtualSwitch) {
+    	def check = virtualSwitch.currentSwitch
+			if (check != "off") {        	
+    			log.debug "Virtual Switch mode validation has been validated. Executing Action"
+    		if (recordCameras) {
+    			arloCapture()
+    			}
+    		if (notifyEnable){
+    		sendnotification() }
+    	}
+    else
+    log.debug "Virtual swtich is off and not in proper state for mode"
     }
     }
 
@@ -206,17 +349,6 @@ def arloCapture() {
 	}
 }
 
-/* 		numFlashes.times {
-			log.trace "Switch on after  $delay msec"
-			switches.eachWithIndex {s, i ->
-				if (initialActionOn[i]) {
-					s.on(delay: delay)
-				}
-				else {
-					s.off(delay:delay)
-				}
-			}
-*/
 def cameraRepeatChk() {
 		if (mySwitch) {
 		def check = mySwitch.currentSwitch
