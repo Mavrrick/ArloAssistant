@@ -178,7 +178,7 @@ def modeTriggerEvt(evt){
     	def curMode = location.currentMode
             if (curMode == stmode) {
     		def alarmState = location.currentState("alarmSystemStatus")?.value
-        	if (alarmState == "stay" && alarmtype2 == 1) {
+        	if (alarmState == "stay" && alarmtype1 == 1) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
 			    if (recordCameras) {
     				arloCapture()
@@ -187,7 +187,7 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
                     }
-        	else if (alarmState == "away" && alarmtype2 == 2) {
+        	else if (alarmState == "away" && alarmtype1 == 2) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
         		if (recordCameras) {
     				arloCapture()
@@ -196,7 +196,7 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
         	}
-            else if (alarmState == "off" && alarmtype2 == 3) {
+            else if (alarmState == "off" && alarmtype1 == 3) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
         		if (recordCameras) {
     				arloCapture()
@@ -247,7 +247,7 @@ def modeTriggerEvt(evt){
 		else if (shmUseState) {
     	def alarmState = location.currentState("alarmSystemStatus")?.value
         	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
-        	if (alarmState == "stay" && alarmtype2 == 1) {
+        	if (alarmState == "stay" && alarmtype1 == 1) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
 			    if (recordCameras) {
     				arloCapture()
@@ -256,7 +256,7 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
                     }
-        	else if (alarmState == "away" && alarmtype2 == 2) {
+        	else if (alarmState == "away" && alarmtype1 == 2) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
         		if (recordCameras) {
     				arloCapture()
@@ -265,7 +265,7 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
         	}
-            else if (alarmState == "off" && alarmtype2 == 3) {
+            else if (alarmState == "off" && alarmtype1 == 3) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
         		if (recordCameras) {
     				arloCapture()
@@ -274,7 +274,10 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
         	}
+            else {
+            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype1}. This is not a valid match. Mode will not execute"
             }
+    	}
 	else if (adtUseState) {
     	def alarmState = panel.currentSecuritySystemStatus
         	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
@@ -306,6 +309,9 @@ def modeTriggerEvt(evt){
     				sendnotification() 
                     }
         	}
+            else {
+            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}. This is not a valid match. Mode will not execute"
+            }
         }
     else if (stmode) {
     	def curMode = location.currentMode
@@ -338,6 +344,9 @@ def modeTriggerEvt(evt){
     		}
     		if (notifyEnable){
     		sendnotification() }
+    }
+    else {
+    log.debug "Smartthings in not in applicable conditions for mode to apply."
     }
 }
 
