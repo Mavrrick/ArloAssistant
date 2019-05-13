@@ -52,6 +52,7 @@ def mainPage()
 			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
 			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
             input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
+			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false 
 //			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
 		}
 
@@ -245,6 +246,7 @@ def modeTriggerEvt(evt){
         }
 		else if (shmUseState) {
     	def alarmState = location.currentState("alarmSystemStatus")?.value
+        	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
         	if (alarmState == "stay" && alarmtype2 == 1) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
 			    if (recordCameras) {
@@ -275,6 +277,8 @@ def modeTriggerEvt(evt){
             }
 	else if (adtUseState) {
     	def alarmState = panel.currentSecuritySystemStatus
+        	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
+            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}."
         	if (alarmState == "armedStay" && alarmtype2 == 1) {
         	log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
 			    if (recordCameras) {
@@ -327,7 +331,7 @@ def modeTriggerEvt(evt){
     else
     log.debug "Virtual swtich is off and not in proper state for mode"
     }
-    else 
+    else if (generalRule){
     log.debug "No Mode critera defined. Running actions"
     	if (recordCameras) {
     		arloCapture()
@@ -335,7 +339,7 @@ def modeTriggerEvt(evt){
     		if (notifyEnable){
     		sendnotification() }
     }
-
+}
 
 def arloCapture() {	
 //	log.debug "$evt.name: $evt.value"
