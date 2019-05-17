@@ -59,6 +59,7 @@ def mainPage()
 		section("Define triggers for integration mode action")
 		{
 			input "motion", "capability.motionSensor", title: "Motion Sensor?", required: false, multiple: true
+			input "sound", "capability.soundSensor", title: "Audio Sensor?", required: false, multiple: true
 			input "contact", "capability.contactSensor", title: "Contact Sensor?", required: false, multiple: true
         	input "myButton", "capability.momentary", title: "What Button?", required: false, multiple: true
 			input "acceleration", "capability.accelerationSensor", title: "Acceleration Sensor?", required: false, multiple: true
@@ -170,10 +171,16 @@ def initialize() {
     if (myButton) {    
         subscribe(myButton, "momentary.pushed", modeTriggerEvt)
 		}
+    if (sound) {    
+        subscribe(myButton, "sound.detected", modeTriggerEvt)
+		}
 }
 
 def modeTriggerEvt(evt){
 	log.debug "${evt.value} Event has occured. Checking to see if in mode for this Smartapp"
+    log.debug "${evt.device} has generated an Event. Checking to see if in mode for this Smartapp"
+    log.debug "${evt.displayName} created event. Checking to see if in mode for this Smartapp"
+    log.debug "${evt.name} name event. Checking to see if in mode for this Smartapp"    
 	if (stmode && shmUseState) {
     	def curMode = location.currentMode
             if (curMode == stmode) {
