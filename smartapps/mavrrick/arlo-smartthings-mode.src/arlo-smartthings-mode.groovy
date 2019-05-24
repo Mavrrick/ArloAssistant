@@ -33,6 +33,7 @@ preferences {
 	page (name: "modeTriggers", title: "Smartthings triggered by event")
     page (name: "modeLightsOpt", title: "Optional Light Setup")
 	page (name: "modeCameraSetup", title: "Camera setup")
+    page (name: "modeAlarmSetup", title: "Siren Setup")
     page (name: "notificationSetup", title: "Notification Setup")
 }
 
@@ -112,6 +113,7 @@ def modeCameraSetup()
 //			input "recordRepeat", "bool", title: "Enable Camare to trigger recording as long as arlarm is occuring?", description: "This switch will enable cameras generate new clips as long as there is a active alarm.", defaultValue: false, required: true, multiple: false
 			input "cameras", "capability.videoCapture", multiple: true, required: false
         	input name: "clipLength", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
+//        	input "alarms", "capability.alarm", title: "Which Alarm(s) to trigger when ADT alarm goes off?", multiple: true, required: false
 		}
 /*		if (settings.numOfSets > 1){
     	section("Camera ruleset2 setup (Optional)"){
@@ -153,7 +155,7 @@ def modeCameraSetup()
 
 def modeLightsOpt()
 {
-	dynamicPage(name: "modeLightsOpt", title: "Optional Light Setup", nextPage: "notificationSetup")
+	dynamicPage(name: "modeLightsOpt", title: "Optional Light Setup", nextPage: "modeAlarmSetup")
     {
     	section("Light Activation options"){
         input "lightAction1", "bool", title: "Enable Light action for this mode", description: "This switch will tell the mode to run the light action.", defaultValue: false, required: true, multiple: false
@@ -163,6 +165,28 @@ def modeLightsOpt()
         input "lightShutOff", "bool", title: "Enable this option to turn off the light automatically", description: "This switch will schedule a check to turn the lights off", defaultValue: false, required: true, multiple: false        
         input "lightShutOffTime", "number", title: "How many minutes to wait before turning off the lights", required: true, range: "1..90", defaultValue: 5
 //		input "lightRepeat", "bool", title: "Enable lights to continue flashing as long as arlarm is occuring.", description: "This switch will enable lights to continue to flash long as there is a active alarm.", defaultValue: false, required: true, multiple: false
+		}		
+/*        section("Flashing Options"){
+		input "onFor", "number", title: "On for (default 5000)", required: false
+		input "offFor", "number", title: "Off for (default 5000)", required: false
+        input "numFlashes", "number", title: "This number of times (default 3)", required: false
+		} */
+        section ("Return to Arlo Assistant Main page"){
+            href "mainPage", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
+		}
+	}
+}
+
+def modeAlarmSetup()
+{
+	dynamicPage(name: "modeAlarmSetup", title: "Optional Alarm Setup", nextPage: "notificationSetup")
+    {
+    	section("Setup your alarm options"){
+        input "alarmAction1", "bool", title: "Enable Alarm action for this mode", description: "This switch will tell the mode to run the Alarm action.", defaultValue: false, required: true, multiple: false
+       	paragraph "Valid alarm types are 1= Siren, 2=Strobe, and 3=Both. All other numberical valudes wil be ignored."
+        input "alarmActionType1", "number", title: "What type of alarm do you want to trigger from?", required: false, range:"1..3", defaultValue: 1        
+		input "alarmSiren1", "capability.alarm", title: "Set these lights to the specified value below", multiple: true, required: false
+        input "alarmDuration1", "number", title: "How many minutes should the alarm stay on for?", required: false, range:"1..15", defaultValue: 1        
 		}		
 /*        section("Flashing Options"){
 		input "onFor", "number", title: "On for (default 5000)", required: false
@@ -235,10 +259,10 @@ def initialize() {
 }
 
 def modeTriggerEvt(evt){
-	log.debug "${evt.value} Event has occured. Checking to see if in mode for this Smartapp"
-    log.debug "${evt.device} has generated an Event. Checking to see if in mode for this Smartapp"
-    log.debug "${evt.displayName} created event. Checking to see if in mode for this Smartapp"
-    log.debug "${evt.name} name event. Checking to see if in mode for this Smartapp"    
+//	log.debug "${evt.value} Event has occured. Checking to see if in mode for this Smartapp"
+    log.debug "${evt.device} has generated a ${evt.name} event with status of ${evt.value}. Checking to see if in mode for this Smartapp"
+//    log.debug "${evt.displayName} created event. Checking to see if in mode for this Smartapp"
+//    log.debug "${evt.name} name event. Checking to see if in mode for this Smartapp"    
 	if (stmode && shmUseState) {
     	def curMode = location.currentMode
             if (curMode == stmode) {
@@ -301,7 +325,7 @@ def modeTriggerEvt(evt){
 	else if (adtUseState) {
     	def alarmState = panel.currentSecuritySystemStatus
         	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
-            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}."
+//            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}."
         	if (alarmState == "armedStay" && alarmtype2 == 1) {
         		log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
 				modeAction()
@@ -347,7 +371,7 @@ def modeAction(){
     	if (recordCameras) {
         	cameras.each {
         	def camaraSatus = it.currentClipStatus
-    		log.debug "Camera is in ${camaraSatus} state"
+//    		log.debug "Camera is in ${camaraSatus} state"
             if (camaraSatus == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
@@ -361,10 +385,44 @@ def modeAction(){
         if (lightAction1) {
         	lightAction()
         	}
+        if (alarmAction1) {
+        	alarmActionOn()
+        	}            
+            alarmAction1
     	if (notifyEnable){
     		sendnotification() }
             }
 
+def alarmActionOn()    
+	{
+        switch (alarmActionType1.value)
+        	{
+            	case 1 :
+                	log.debug "Alarm type ${alarmActionType1.value} detected. Turning on siren."
+                    alarmSiren1?.siren()
+                    break
+                case 2 :
+                	log.debug "Alarm type ${alarmActionType1.value} detected. Turning on strobe."
+                    alarmSiren1?.strobe()
+                    break
+                case 3 :
+                	log.debug "Alarm type ${alarmActionType1.value} detected. Turning on Siren and Strobe."
+                    alarmSiren1?.both()
+                    break
+                default:
+					log.debug "Ignoring unexpected alarmtype mode."
+        			log.debug "Alarm type ${alarmActionType1.value} detected."
+                    break
+              }
+		runIn((alarmDuration1*60), alarmActionOff)
+	}
+
+
+def alarmActionOff()
+	{
+    log.debug "Turning off siren"
+    alarmSiren1?.off()
+    }
 
 def arloCapture() {	
 //	log.debug "$evt.name: $evt.value"
