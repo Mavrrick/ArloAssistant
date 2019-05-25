@@ -75,6 +75,19 @@ def arloModeSetup()
     }
 }
 
+def arloCameraMan()
+{
+	dynamicPage(name: "arloCameraMan", title: "Arlo Assistant Camera Management", uninstall: false, install: true)
+	{
+// The parent app preferences are pretty simple: just use the app input for the child app.
+        section ("Arlo Smartthings Mode management"){
+			app(name: "arloCameraReadyCheck", appName: "Arlo Camera Ready Check", namespace: "Mavrrick", title: "Create Arlo Camera Health Check", multiple: true)
+//			app(name: "arloTriggerRecord", appName: "Arlo Triggered Record", namespace: "Mavrrick", title: "Create a triggered event that will create recording", multiple: true)
+//            app(name: "arloTriggerRecordRepeat", appName: "Arlo Triggered Repeat Recorder", namespace: "Mavrrick", title: "Create a triggered event that will record until the event is over", multiple: true)            
+            }
+    }
+}
+
 def about()
 {
 	dynamicPage(name: "about", title: "Arlo Assistant About", uninstall: false, install: false)
