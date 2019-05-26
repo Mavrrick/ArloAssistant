@@ -29,6 +29,7 @@ import groovy.time.TimeCategory
 
 preferences {
 	page (name: "mainPage", title: "Setup Smartthings Arlo Mode integration")
+	page (name: "modeDefine", title: "What will define what the mode is")    
 	page (name: "securityState", title: "What security modes will be used")
 	page (name: "modeTriggers", title: "Smartthings triggered by event")
     page (name: "modeLightsOpt", title: "Optional Light Setup")
@@ -46,26 +47,24 @@ def mainPage()
         }
 		section("What will determine when this mode is active")
 		{
-         	paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
+         	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
+/*            paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
  			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
         	paragraph "The below switches will determine if this mode will validate against Alarm system mode."       	
 			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
 			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
 			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
+                            input "fromTime", "time", title: "From", required: true
+        					input "toTime", "time", title: "To", required: true
+
             input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
 			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false 
-//			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
+			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false */
 		}
 
 		section("Define triggers for integration mode action")
 		{
-			input "motion", "capability.motionSensor", title: "Motion Sensor?", required: false, multiple: true
-			input "sound", "capability.soundSensor", title: "Audio Sensor?", required: false, multiple: true
-			input "contact", "capability.contactSensor", title: "Contact Sensor?", required: false, multiple: true
-        	input "myButton", "capability.momentary", title: "What Button?", required: false, multiple: true
-			input "acceleration", "capability.accelerationSensor", title: "Acceleration Sensor?", required: false, multiple: true
-			input "mySwitch", "capability.switch", title: "Switch?", required: false, multiple: true
-        	input "myMoisture", "capability.waterSensor", title: "Moisture Sensor?", required: false, multiple: true
+            href "modeTriggers", title: "Click here to define triggers.", description: "Describe the triggers."
 		}
 		section("Mode Action When triggered")
 		{
@@ -77,9 +76,49 @@ def mainPage()
 	}
 }
 
+def modeDefine()
+{
+	dynamicPage(name: "modeDefine", title: "What will determine if this Arlo Assitant Mode is active", nextPage: "modeTriggers", uninstall: false, install: false)
+	{
+/*    	section(title: "Please name the Smartthings Arlo Assistant Mode") {
+        	label title: "Please name this Smartthings Arlo Mode", required: true, defaultValue: "Smartthings Arlo Mode"
+        } */
+		section("Defin Smartthings Mode")
+		{
+ 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false 
+//			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
+		}
+
+		section("Alarm Mode State integration")
+		{
+			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
+			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
+			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
+		}
+		section("Defin Time criteria")
+		{
+            paragraph "If you use the time values please use it along. It is not currently setup to work with the ST Mode or alarm state."
+			input "timeSetup", "bool", title: "This will enable the mode between these times.", required: false
+            input "fromTime", "time", title: "From", required: false
+        	input "toTime", "time", title: "To", required: false
+		}
+        section("Define virtual Switch")
+        {
+            paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
+            input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
+        }
+        section("is this a general rul")
+        {
+			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false
+        }
+	}
+}
+
+
+
 def securityState()
 {
-	dynamicPage(name: "securityState", title: "What security modes will be used", nextPage: "mainPage")
+	dynamicPage(name: "securityState", title: "What security modes will be used", nextPage: "modeDefine", uninstall: false, install: false)
 	{
 		section("Smart Home Monitor mode selection")
 		{
@@ -103,6 +142,50 @@ def securityState()
 		}
 	}
 }
+
+def modeTriggers()
+{
+	dynamicPage(name: "modeTriggers", title: "Define Triggers for Arlo Action", nextPage: "modeCameraSetup", uninstall: false, install: false)
+	{
+/*    	section(title: "Please name the Smartthings Arlo Assistant Mode") {
+        	label title: "Please name this Smartthings Arlo Mode", required: true, defaultValue: "Smartthings Arlo Mode"
+        }
+		section("What will determine when this mode is active")
+		{
+         	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
+            paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
+ 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
+        	paragraph "The below switches will determine if this mode will validate against Alarm system mode."       	
+			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
+			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
+			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
+                            input "fromTime", "time", title: "From", required: true
+        					input "toTime", "time", title: "To", required: true
+
+            input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
+			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false 
+			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false 
+		} */
+		section("Select each item you want to use as a trigger")
+		{
+			input "motion", "capability.motionSensor", title: "Motion Sensor?", required: false, multiple: true
+			input "sound", "capability.soundSensor", title: "Audio Sensor?", required: false, multiple: true
+			input "contact", "capability.contactSensor", title: "Contact Sensor?", required: false, multiple: true
+        	input "myButton", "capability.momentary", title: "What Button?", required: false, multiple: true
+			input "acceleration", "capability.accelerationSensor", title: "Acceleration Sensor?", required: false, multiple: true
+			input "mySwitch", "capability.switch", title: "Switch?", required: false, multiple: true
+        	input "myMoisture", "capability.waterSensor", title: "Moisture Sensor?", required: false, multiple: true
+		}
+/*		section("Mode Action When triggered")
+		{
+        	input name: "numOfSets", type: "number", title: "Number of rule sets", description: "How many different rule sets will you hae", required: true, range: "1...5", defaultValue: 1           	
+            href "modeCameraSetup", title: "Camera setup for mode.", description: "Camera setup for mode Action"
+			href "modeLightsOpt", title: "Light setup actions for mode.", description: "Define light actions for this mode"
+			href "notificationSetup", title: "Notification setup", description: "Notification values for smartapp"
+		}*/
+	}
+}
+
 
 def modeCameraSetup()
 {
@@ -349,7 +432,16 @@ def modeTriggerEvt(evt){
 			modeAction()
     		}
     }
-    else if (virtualSwitch) {
+    else if (timeSetup) {
+   	 	def between = timeOfDayIsBetween(fromTime, toTime, new Date(), location.timeZone)
+			if (between) {        	
+    			log.debug "Time Validation successfull"
+			modeAction()
+    	}
+        	else
+            log.debug "Time did not validate. No caction"
+            }
+	else if (virtualSwitch) {
     	def check = virtualSwitch.currentSwitch
 			if (check != "off") {        	
     			log.debug "Virtual Switch mode validation has been validated. Executing Action"
@@ -579,4 +671,12 @@ def lightActionChk() {
         		switcheSet1?.off()
 		}
 	}
-	
+
+def test(){
+    def between = timeOfDayIsBetween(fromTime, toTime, new Date(), location.timeZone)
+    if (between) {
+        roomLight.on()
+    } else {
+        roomLight.off()
+    }
+    }
