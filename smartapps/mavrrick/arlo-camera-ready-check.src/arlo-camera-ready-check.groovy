@@ -84,7 +84,7 @@ def arloRefresh() {
             if (camaraSatus == "Completed") 
         	{
         	log.debug "Camera has returned to a completed state "
-//    		arloCapture()
+//            sendCameraHealthNotify()
     		}
             else {
             log.debug "Camera state has failed to return to completed. Submitting Notification for action"
@@ -94,8 +94,8 @@ def arloRefresh() {
             
 def sendCameraHealthNotify() {
        	log.debug "Camera Health Notify"
-       	def msg = "Camera has not returned to a completed states. Please check your device."
-        log.debug "$evt.name:$evt.value, sendPush:$sendPush, '$msg'"
+       	def msg = "${cameras} camera has not returned to a completed states. Please check your device."
+//        log.debug "$evt.name:$evt.value, sendPush:$sendPush, '$msg'"
 
    		if (phone) { // check that the user did select a phone number
         	if ( phone.indexOf(";") > 0){
