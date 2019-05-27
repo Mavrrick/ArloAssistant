@@ -31,9 +31,12 @@ preferences {
 	section("Setup") {
 		input "cameras", "capability.videoCapture", multiple: false
         input name: "clipLength", type: "number", title: "Check time", description: "Please Specify time before checking camera status in seconds", required: true, range: "5..600"
-//        input "frequencyUnit", "enum", options: ["mins", "hours"], required: true, defaultValue: "hours", title: "Unit for frequency"
-//        input name: "frequency", type: "number", title: "Frequency to refresh cameras", description: "Please specify how often you would like to refresh cameras", required: true
         }
+    section("IFTTT Fix Integration") {
+		input "iftttSwitch", "capability.switch", multiple: false
+//        input name: "clipLength", type: "number", title: "Check time", description: "Please Specify time before checking camera status in seconds", required: true, range: "5..600"
+        }
+
         	section("Via a push notification and/or an SMS message"){
 			input("recipients", "contact", title: "Send notifications to") {
         	paragraph "Multiple numbers can be entered as long as sperated by a (;)"
@@ -89,6 +92,7 @@ def arloRefresh() {
             else {
             log.debug "Camera state has failed to return to completed. Submitting Notification for action"
             sendCameraHealthNotify()
+            iftttSwitch?.on()
             }
             }
             
