@@ -97,10 +97,12 @@ def modeDefine()
 		}
 		section("Defin Time criteria")
 		{
-            paragraph "If you use the time values please use it along. It is not currently setup to work with the ST Mode or alarm state."
+            paragraph "If you use the time values please use it alone. It is not currently setup to work with the ST Mode or alarm state."
 			input "timeSetup", "bool", title: "This will enable the mode between these times.", required: false
             input "fromTime", "time", title: "From", required: false
         	input "toTime", "time", title: "To", required: false
+            paragraph "Specify all of the days you wish to use this mode for."
+			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday"]
 		}
         section("Define virtual Switch")
         {
@@ -120,17 +122,17 @@ def securityState()
 {
 	dynamicPage(name: "securityState", title: "What security modes will be used", nextPage: "modeDefine", uninstall: false, install: false)
 	{
+		if (settings.shmUseState) {
 		section("Smart Home Monitor mode selection")
-		{
-			if (settings.shmUseState) {
+			{
             paragraph "Please select the SHM Security mode that will be used to identify this mode" 
             paragraph "What Active alarm mode do you want to monitor for 1= Stay, 2=Away, 3=Disarmed. All other numberical valudes wil be ignored."
         	input "alarmtype1", "number", title: "What type of alarm do you want to trigger from?", required: false, defaultValue: 1        
             }
          }
-        section("ADT Smartthings Alarm mode selection")
-		{
-            if (settings.adtUseState) {
+        if (settings.adtUseState) {
+		section("ADT Smartthings Alarm mode selection")
+			{
             paragraph "Please select the ADT Smartthings Alarm mode that will be used to identify this mode"       	
 			input "panel", "capability.securitySystem", title: "Select ADT Panel for Alarm Status.", required: true
 			paragraph "What Active alarm mode do you want to monitor for 1= Arm/Stay, 2=Armed/Away, 3=Disarmed. All other numberical valudes wil be ignored."
@@ -138,7 +140,7 @@ def securityState()
 			}
 		}
         section ("Return to Arlo Smartthings Mode setup"){
-            href "mainPage", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
+            href "modeDefine", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
 		}
 	}
 }
@@ -433,11 +435,17 @@ def modeTriggerEvt(evt){
     		}
     }
     else if (timeSetup) {
-   	 	def between = timeOfDayIsBetween(fromTime, toTime, new Date(), location.timeZone)
+    	def df = new java.text.SimpleDateFormat("EEEE")
+		    df.setTimeZone(location.timeZone)
+		    def day = df.format(new Date())
+		    def dayCheck = days.contains(day)
+		    if (dayCheck) {
+	   	 	def between = timeOfDayIsBetween(fromTime, toTime, new Date(), location.timeZone)
 			if (between) {        	
     			log.debug "Time Validation successfull"
 			modeAction()
     	}
+        }
         	else
             log.debug "Time did not validate. No caction"
             }
