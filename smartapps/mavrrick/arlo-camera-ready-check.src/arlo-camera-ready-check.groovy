@@ -34,6 +34,7 @@ preferences {
         }
     section("IFTTT Fix Integration") {
 		input "iftttSwitch", "capability.switch", multiple: false
+        input name: "iftttLength", type: "number", title: "Check time", description: "Time in seconds to validate IFTTT call corrected problem.", required: true, range: "5..600"
 //        input name: "clipLength", type: "number", title: "Check time", description: "Please Specify time before checking camera status in seconds", required: true, range: "5..600"
         }
 
@@ -78,6 +79,11 @@ def arloCheck(evt) {
     runIn(clipLength, arloRefresh)
 }
 
+def arloIFTTTCheck() {	
+	log.debug "${cameras} IFTTT Validation of fix action in ${iftttLength}"
+    runIn(iftttLength, arloRefresh)
+}
+
 def arloRefresh() {	
 //	log.debug "$evt.name: $evt.value"
 //	log.debug "Refreshing cameras with ${clipLength} second capture"
@@ -93,6 +99,7 @@ def arloRefresh() {
             log.debug "Camera state has failed to return to completed. Submitting Notification for action"
             sendCameraHealthNotify()
             iftttSwitch?.on()
+            arloIFTTTCheck()
             }
             }
             
