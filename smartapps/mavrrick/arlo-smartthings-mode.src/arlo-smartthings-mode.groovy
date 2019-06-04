@@ -48,18 +48,6 @@ def mainPage()
 		section("What will determine when this mode is active")
 		{
          	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
-/*            paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
- 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
-        	paragraph "The below switches will determine if this mode will validate against Alarm system mode."       	
-			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
-			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
-			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
-                            input "fromTime", "time", title: "From", required: true
-        					input "toTime", "time", title: "To", required: true
-
-            input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
-			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false 
-			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false */
 		}
 
 		section("Define triggers for integration mode action")
@@ -149,25 +137,6 @@ def modeTriggers()
 {
 	dynamicPage(name: "modeTriggers", title: "Define Triggers for Arlo Action", nextPage: "modeCameraSetup", uninstall: false, install: false)
 	{
-/*    	section(title: "Please name the Smartthings Arlo Assistant Mode") {
-        	label title: "Please name this Smartthings Arlo Mode", required: true, defaultValue: "Smartthings Arlo Mode"
-        }
-		section("What will determine when this mode is active")
-		{
-         	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
-            paragraph "If you use a virtual switch please configure it by its self. It is not currently setup to work with the ST Mode or alarm state."
- 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false
-        	paragraph "The below switches will determine if this mode will validate against Alarm system mode."       	
-			input "shmUseState", "bool", title: "Do you want to use the SHM/Location Alarm mode", required: false
-			input "adtUseState", "bool", title: "Do you want to use the ADT/Smartthings Alarm Panel mode", required: false 
-			href "securityState", title: "Security system modes to use", description: "Select security modes that will apply"
-                            input "fromTime", "time", title: "From", required: true
-        					input "toTime", "time", title: "To", required: true
-
-            input "virtualSwitch", "capability.switch", title: "Add virtual switch for mode.", required: false, multiple: false
-			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false 
-			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false 
-		} */
 		section("Select each item you want to use as a trigger")
 		{
 			input "motion", "capability.motionSensor", title: "Motion Sensor?", required: false, multiple: true
@@ -195,7 +164,6 @@ def modeCameraSetup()
 	{
     	section("Camera ruleset1 setup (Optional)"){
         	input "recordCameras", "bool", title: "Enable Camera recording?", description: "This switch will enable cameras to record on alarm events.", defaultValue: false, required: true, multiple: false
-//			input "recordRepeat", "bool", title: "Enable Camare to trigger recording as long as arlarm is occuring?", description: "This switch will enable cameras generate new clips as long as there is a active alarm.", defaultValue: false, required: true, multiple: false
 			input "cameras", "capability.videoCapture", multiple: true, required: false
         	input name: "clipLength", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
 //        	input "alarms", "capability.alarm", title: "Which Alarm(s) to trigger when ADT alarm goes off?", multiple: true, required: false
@@ -249,13 +217,7 @@ def modeLightsOpt()
 		input "switchLevelChg1", "number", title: "What level do you want your lights set at.", required: true, range: "1..100", defaultValue: 100
         input "lightShutOff", "bool", title: "Enable this option to turn off the light automatically", description: "This switch will schedule a check to turn the lights off", defaultValue: false, required: true, multiple: false        
         input "lightShutOffTime", "number", title: "How many minutes to wait before turning off the lights", required: true, range: "1..90", defaultValue: 5
-//		input "lightRepeat", "bool", title: "Enable lights to continue flashing as long as arlarm is occuring.", description: "This switch will enable lights to continue to flash long as there is a active alarm.", defaultValue: false, required: true, multiple: false
 		}		
-/*        section("Flashing Options"){
-		input "onFor", "number", title: "On for (default 5000)", required: false
-		input "offFor", "number", title: "Off for (default 5000)", required: false
-        input "numFlashes", "number", title: "This number of times (default 3)", required: false
-		} */
         section ("Return to Arlo Assistant Main page"){
             href "mainPage", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
 		}
@@ -273,11 +235,6 @@ def modeAlarmSetup()
 		input "alarmSiren1", "capability.alarm", title: "Set these lights to the specified value below", multiple: true, required: false
         input "alarmDuration1", "number", title: "How many minutes should the alarm stay on for?", required: false, range:"1..15", defaultValue: 1        
 		}		
-/*        section("Flashing Options"){
-		input "onFor", "number", title: "On for (default 5000)", required: false
-		input "offFor", "number", title: "Off for (default 5000)", required: false
-        input "numFlashes", "number", title: "This number of times (default 3)", required: false
-		} */
         section ("Return to Arlo Assistant Main page"){
             href "mainPage", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
 		}
@@ -301,8 +258,9 @@ def notificationSetup()
 		}
 	}
 		section("Message repeat options") {
-			input "notifyRepeat", "bool", title: "Enable this switch if you want to recieves messages until someone actively clears the alarm.", description: "Enable this switch if you want to recieves messages until someone actively clears the alarm.", defaultValue: false, required: true, multiple: false
-			input "msgrepeat", "decimal", title: "Minutes", required: false
+			input "notifyTimeout", "number", title: "Minimum time between messages", required: false
+//			input "notifyRepeat", "bool", title: "Enable this switch if you want to recieves messages until someone actively clears the alarm.", description: "Enable this switch if you want to recieves messages until someone actively clears the alarm.", defaultValue: false, required: true, multiple: false
+//			input "msgrepeat", "decimal", title: "Minutes", required: false
 	}
 	}
 }
@@ -341,13 +299,11 @@ def initialize() {
     if (sound) {    
         subscribe(myButton, "sound.detected", modeTriggerEvt)
 		}
+   	state.noteTime = now()
 }
 
 def modeTriggerEvt(evt){
-//	log.debug "${evt.value} Event has occured. Checking to see if in mode for this Smartapp"
     log.debug "${evt.device} has generated a ${evt.name} event with status of ${evt.value}. Checking to see if in mode for this Smartapp"
-//    log.debug "${evt.displayName} created event. Checking to see if in mode for this Smartapp"
-//    log.debug "${evt.name} name event. Checking to see if in mode for this Smartapp"    
 	if (stmode && shmUseState) {
     	def curMode = location.currentMode
             if (curMode == stmode) {
@@ -410,7 +366,6 @@ def modeTriggerEvt(evt){
 	else if (adtUseState) {
     	def alarmState = panel.currentSecuritySystemStatus
         	log.debug "Identified to use ADT Alarm Mode. Checking what alarm mode is active"
-//            log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}."
         	if (alarmState == "armedStay" && alarmtype2 == 1) {
         		log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
 				modeAction()
@@ -490,7 +445,17 @@ def modeAction(){
         	}            
             alarmAction1
     	if (notifyEnable){
-    		sendnotification() }
+			def timePassed = now() - state.noteTime
+        	log.debug "${new Date(state.noteTime)}"
+        	log.debug "${timePassed}"
+            if (timePassed > notifyTimeout*60000){
+    		sendnotification()
+            state.noteTime = now()
+            	}
+            else {
+            log.debug "Not enogh time has passed. No notification is sent"
+            	}
+            }
             }
 
 def alarmActionOn()    
@@ -582,6 +547,7 @@ def msg = message
         log.debug("Sending Push to everyone")
         sendPush(msg)
     }
+//def noteTime = now()    
     sendNotificationEvent(msg)	
         if (settings.notifyRepeat)
 	{
@@ -589,19 +555,6 @@ def msg = message
 	}
 }
 }
-
-/* def notifyRepeatChk() {
-		def alarmActive = panel.currentSecuritySystemStatus
-    	log.debug "Current alarms is in ${alarmActive} state"
-		if (alarmActive != "disarmed") 
-        	{
-        	log.debug "Alarm Event is still occuring. Submitting another notification"
-        sendnotification()   
-        	}
-		else {
-        log.debug "Alarm has cleared and is no more notifications are needed."
-		}
-        } */
         
 def lightAction(){
 		switcheSet1?.on()
