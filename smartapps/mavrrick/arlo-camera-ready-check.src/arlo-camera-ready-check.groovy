@@ -39,11 +39,12 @@ preferences {
         }
 
         	section("Via a push notification and/or an SMS message"){
+   			input "sendNotify", "bool", title: "Do you want to notifiy on this event", description: "This will tell Arlo Assistant to send notification for Camera Health Check", defaultValue: false, required: true, multiple: false
 			input("recipients", "contact", title: "Send notifications to") {
         	paragraph "Multiple numbers can be entered as long as sperated by a (;)"
 			input "phone", "phone", title: "Enter a phone number to get SMS", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
 //          input "sendPush", "enum", title: "Send Push notifications to everyone?", required: false, options: ["Yes", "No"]
 		}
 	}
@@ -97,7 +98,9 @@ def arloRefresh() {
     		}
             else {
             log.debug "Camera state has failed to return to completed. Submitting Notification for action"
-            sendCameraHealthNotify()
+            if (sendNotify) {
+				sendCameraHealthNotify()
+                }
             iftttSwitch?.on()
             arloIFTTTCheck()
             }
