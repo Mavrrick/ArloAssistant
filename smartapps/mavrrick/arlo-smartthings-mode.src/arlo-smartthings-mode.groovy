@@ -272,7 +272,7 @@ def modeRulesetSetup()
             paragraph "Please select Cameras involved with Ruleset 4"
             input "recordCameras4", "bool", title: "Enable Camera recording?", description: "This switch will enable cameras to record on alarm events.", defaultValue: false, required: true, multiple: false
 			input "cameras4", "capability.videoCapture", multiple: true, required: false
-        	input name: "clipLength3", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
+        	input name: "clipLength4", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
 			paragraph "Please define light actions with Ruleset 4"
  	        input "lightAction4", "bool", title: "Enable Light action for this mode", description: "This switch will tell the mode to run the light action.", defaultValue: false, required: true, multiple: false
 			input "switcheSet4", "capability.switch", title: "These lights will be activated with the action", multiple: true, required: false
@@ -311,7 +311,7 @@ def modeRulesetSetup()
             paragraph "Please select Cameras involved with Ruleset 5"
             input "recordCameras5", "bool", title: "Enable Camera recording?", description: "This switch will enable cameras to record on alarm events.", defaultValue: false, required: true, multiple: false
 			input "cameras5", "capability.videoCapture", multiple: true, required: false
-        	input name: "clipLength3", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
+        	input name: "clipLength5", type: "number", title: "Clip Length", description: "Please enter the length of each recording.", required: true, range: "5..120", defaultValue: 120
 			paragraph "Please define light actions with Ruleset 5"
  	        input "lightAction5", "bool", title: "Enable Light action for this mode", description: "This switch will tell the mode to run the light action.", defaultValue: false, required: true, multiple: false
 			input "switcheSet5", "capability.switch", title: "These lights will be activated with the action", multiple: true, required: false
