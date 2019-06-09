@@ -50,9 +50,9 @@ def mainPage()
          	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
 		}
 
-		section("Define triggers for integration mode action")
+		section("Define ruleset values ")
 		{
-            href "modeRulesetSetup", title: "Click here to define triggers.", description: "Describe the triggers."
+            href "modeRulesetSetup", title: "Define rulesets for mode.", description: "Defin the Rulesets that will be active in mode."
 		}
 /*		section("Mode Action When triggered")
 		{
