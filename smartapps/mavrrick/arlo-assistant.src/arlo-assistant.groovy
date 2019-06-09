@@ -69,8 +69,6 @@ def arloModeSetup()
 // The parent app preferences are pretty simple: just use the app input for the child app.
         section ("Arlo Smartthings Mode management"){
 			app(name: "arloSmartthingsMode", appName: "Arlo Smartthings Mode", namespace: "Mavrrick", title: "Create Arlo Smarthings integration Mode", multiple: true)
-//			app(name: "arloTriggerRecord", appName: "Arlo Triggered Record", namespace: "Mavrrick", title: "Create a triggered event that will create recording", multiple: true)
-//            app(name: "arloTriggerRecordRepeat", appName: "Arlo Triggered Repeat Recorder", namespace: "Mavrrick", title: "Create a triggered event that will record until the event is over", multiple: true)            
             }
     }
 }
@@ -82,8 +80,6 @@ def arloCameraMan()
 // The parent app preferences are pretty simple: just use the app input for the child app.
         section ("Arlo Smartthings Mode management"){
 			app(name: "arloCameraReadyCheck", appName: "Arlo Camera Ready Check", namespace: "Mavrrick", title: "Create Arlo Camera Health Check", multiple: true)
-//			app(name: "arloTriggerRecord", appName: "Arlo Triggered Record", namespace: "Mavrrick", title: "Create a triggered event that will create recording", multiple: true)
-//            app(name: "arloTriggerRecordRepeat", appName: "Arlo Triggered Repeat Recorder", namespace: "Mavrrick", title: "Create a triggered event that will record until the event is over", multiple: true)            
             }
     }
 }
