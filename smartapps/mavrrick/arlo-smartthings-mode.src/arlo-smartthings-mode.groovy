@@ -1419,7 +1419,7 @@ def arloCapture4() {
     	end4 = start4 + clipLength4.seconds
  	}
     log.debug "Capturing at ${start4} to ${end4}..."
-    cameras3.capture(start4, start4, end4)
+    cameras4.capture(start4, start4, end4)
 }
 
 def sendnotification4() {
@@ -1610,7 +1610,7 @@ def arloCapture5() {
     	end4 = start5 + clipLength5.seconds
  	}
     log.debug "Capturing at ${start5} to ${end5}..."
-    cameras3.capture(start5, start5, end5)
+    cameras5.capture(start5, start5, end5)
 }
 
 def sendnotification5() {
