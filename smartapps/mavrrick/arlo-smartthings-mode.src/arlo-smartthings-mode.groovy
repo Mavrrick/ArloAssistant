@@ -1607,7 +1607,7 @@ def arloCapture5() {
     Date start5 = new Date()
     Date end5 = new Date() 
     use( TimeCategory ) {
-    	end4 = start5 + clipLength5.seconds
+    	end5 = start5 + clipLength5.seconds
  	}
     log.debug "Capturing at ${start5} to ${end5}..."
     cameras5.capture(start5, start5, end5)
