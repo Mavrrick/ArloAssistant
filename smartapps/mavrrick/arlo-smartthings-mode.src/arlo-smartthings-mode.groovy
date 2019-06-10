@@ -49,7 +49,15 @@ def mainPage()
 		{
          	href "modeDefine", title: "Define criteria for Arlo Assitant Mode", description: "Define Arlo Assistant Mode"
 		}
-
+        section("Camera State Management")
+        {
+        input "camerasOn", "capability.videoCapture", title: "What cameras do you want to activate in this mode", multiple: true, required: false
+        input "camerasOff", "capability.videoCapture", title: "What cameras do you want to deactivate in this mode", multiple: true, required: false
+        }
+       section("Define Number of Rulesets")
+        {
+        input "numOfSets", "number", title: "How Many Rule Sets will the mode use?", required: false, range: "1..5", defaultValue: 1       
+        } 
 		section("Define ruleset values ")
 		{
             href "modeRulesetSetup", title: "Define rulesets for mode.", description: "Defin the Rulesets that will be active in mode."
@@ -98,15 +106,11 @@ def modeDefine()
         {
 			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false
         }
-        section("Camera State Management")
+/*        section("Camera State Management")
         {
         input "camerasOn", "capability.videoCapture", title: "What cameras do you want to activate in this mode", multiple: true, required: false
         input "camerasOff", "capability.videoCapture", title: "What cameras do you want to deactivate in this mode", multiple: true, required: false
-        }
-       section("Define Number of Rulesets")
-        {
-        input "numOfSets", "number", title: "How Many Rule Sets will the mode use?", required: false, range: "1..5", defaultValue: 1       
-        } 
+        }*/
 	}
 }
 
