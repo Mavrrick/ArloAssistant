@@ -776,6 +776,7 @@ def modeTriggerEvt(evt){
 }
 
 def modeAction(evt){
+		log.debug "Ruleset 1 event"
     	if (recordCameras) {
         	cameras.each {
         	def camaraSatus = it.currentClipStatus
@@ -969,6 +970,7 @@ def lightActionChk() {
 // Create Routines for ruleset 2
 
 def modeAction2(evt){
+		log.debug "Ruleset2 event"
     	if (recordCameras2) {
         	cameras2.each {
         	def camaraSatus2 = it.currentClipStatus
@@ -1159,6 +1161,7 @@ def lightActionChk2() {
 //Rule set 3 routines
 
 def modeAction3(evt){
+		log.debug "Ruleset 3 event"
     	if (recordCameras3) {
         	cameras3.each {
         	def camaraSatus3 = it.currentClipStatus
@@ -1349,6 +1352,7 @@ def lightActionChk3() {
 // Ruleset 4 Methods
 
 def modeAction4(evt){
+		log.debug "Ruleset 4 event"
     	if (recordCameras4) {
         	cameras4.each {
         	def camaraSatus4 = it.currentClipStatus
@@ -1540,6 +1544,7 @@ def lightActionChk4() {
 
 
 def modeAction5(evt){
+		log.debug "Ruleset 5 event"
     	if (recordCameras5) {
         	cameras5.each {
         	def camaraSatus5 = it.currentClipStatus
@@ -1627,7 +1632,7 @@ def msg5 = message5
 /*        log.debug "$evt.name:$evt.value, pushAndPhone:$pushAndPhone, '$msg'" */
    if (phone5) { // check that the user did select a phone number
         if ( phone5.indexOf(";") > 0){
-            def phones4 = phone4.split(";")
+            def phones5 = phone5.split(";")
             for ( def i = 0; i < phones5.size(); i++) {
                 log.debug("Sending SMS ${i+1} to ${phones5[i]}")
                 sendSmsMessage(phones5[i], msg5)

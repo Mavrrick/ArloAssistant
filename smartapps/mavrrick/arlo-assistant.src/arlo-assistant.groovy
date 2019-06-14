@@ -94,13 +94,13 @@ def about()
 		}
         section("Support locations")
 		{
-			href "thingsAreSmart", style:"embedded", title: "Things That Are Smart Support Page", url: "http://thingsthataresmart.wiki/index.php?title=Arlo_Assistant"
-			href "smtReleaseThd", style:"embedded", title: "Smartthings Community Support Thread", url: "https://community.smartthings.com/t/beta-arlo-assitant-arlo-enhanced-management-from-smartthings/163612"
+			href (name: "thingsAreSmart", style:"embedded", title: "Things That Are Smart Support Page", url: "http://thingsthataresmart.wiki/index.php?title=Arlo_Assistant")
+			href (name: "smtReleaseThd", style:"embedded", title: "Smartthings Community Support Thread", url: "https://community.smartthings.com/t/beta-arlo-assitant-arlo-enhanced-management-from-smartthings/163612")
 		}
         section("Support the Project")
 		{
 			paragraph "Arlo Assistant is provided free for personal and non-commercial use.  I have worked on this app in my free time to fill the needs I have found for myself and others like you.  I will continue to make improvements where I can. If you would like you can donate to continue to help with development please use the link below."
-			href "donate", style:"embedded", title: "Consider making a \$5 or \$10 donation today.", url: "https://www.paypal.me/mavrrick58"
+			href (name: "donate", style:"embedded", title: "Consider making a \$5 or \$10 donation today.", url: "https://www.paypal.me/mavrrick58")
 		}
         section ("Return to Arlo Assistant Main page"){
             href "mainPage", title: "Arlo Assistant Main Menu", description: "Return to main Arlo Assistant Main Menu"            
