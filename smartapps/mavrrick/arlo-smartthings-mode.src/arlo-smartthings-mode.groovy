@@ -780,6 +780,7 @@ def modeAction(evt){
     	if (recordCameras) {
         	cameras.each {
         	def camaraSatus = it.currentClipStatus
+            log.debug "Camera Status is ${camaraSatus}"
             if (camaraSatus == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
@@ -974,6 +975,7 @@ def modeAction2(evt){
     	if (recordCameras2) {
         	cameras2.each {
         	def camaraSatus2 = it.currentClipStatus
+            log.debug "Camera Status is ${camaraSatus2}"
             if (camaraSatus2 == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
@@ -1165,6 +1167,7 @@ def modeAction3(evt){
     	if (recordCameras3) {
         	cameras3.each {
         	def camaraSatus3 = it.currentClipStatus
+            log.debug "Camera Status is ${camaraSatus3}"
             if (camaraSatus3 == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
@@ -1356,6 +1359,7 @@ def modeAction4(evt){
     	if (recordCameras4) {
         	cameras4.each {
         	def camaraSatus4 = it.currentClipStatus
+            log.debug "Camera Status is ${camaraSatus4}"
             if (camaraSatus4 == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
@@ -1548,6 +1552,7 @@ def modeAction5(evt){
     	if (recordCameras5) {
         	cameras5.each {
         	def camaraSatus5 = it.currentClipStatus
+            log.debug "Camera Status is ${camaraSatus5}"
             if (camaraSatus5 == "Completed") 
         	{
         	log.debug "Camera is not recording. Submitting clip to record."
