@@ -786,8 +786,13 @@ def modeAction(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture()
     		}
+            else if (camaraSatus == "Initiated") 
+        	{
+        	log.debug "Camera is active and recording can not be submitted."
+    		}
             else {
-            log.debug "Camera is active and recording can not be submitted."
+            log.debug "Could not check camera status. Submiting Record"
+            arloCapture()
             }
             }
             }
@@ -981,8 +986,13 @@ def modeAction2(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture2()
     		}
+            else if (camaraSatus2 == "Initiated") 
+        	{
+        	log.debug "Camera is active and recording can not be submitted."
+    		}
             else {
-            log.debug "Camera is active and recording can not be submitted."
+            log.debug "Could not check camera status. Submiting Record"
+            arloCapture2()
             }
             }
             }
@@ -1173,8 +1183,13 @@ def modeAction3(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture3()
     		}
+            else if (camaraSatus3 == "Initiated") 
+        	{
+        	log.debug "Camera is active and recording can not be submitted."
+    		}
             else {
-            log.debug "Camera is active and recording can not be submitted."
+            log.debug "Could not check camera status. Submiting Record"
+            arloCapture3()
             }
             }
             }
@@ -1365,8 +1380,13 @@ def modeAction4(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture4()
     		}
+            else if (camaraSatus4 == "Initiated") 
+        	{
+        	log.debug "Camera is active and recording can not be submitted."
+    		}
             else {
-            log.debug "Camera is active and recording can not be submitted."
+            log.debug "Could not check camera status. Submiting Record"
+            arloCapture4()
             }
             }
             }
@@ -1558,8 +1578,13 @@ def modeAction5(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture5()
     		}
+            else if (camaraSatus5 == "Initiated") 
+        	{
+        	log.debug "Camera is active and recording can not be submitted."
+    		}
             else {
-            log.debug "Camera is active and recording can not be submitted."
+            log.debug "Could not check camera status. Submiting Record"
+            arloCapture5()
             }
             }
             }
