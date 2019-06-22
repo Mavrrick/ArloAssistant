@@ -96,13 +96,16 @@ def arloRefresh() {
         	log.debug "Camera has returned to a completed state "
 //            sendCameraHealthNotify()
     		}
-            else {
+            else if (camaraSatus == "Initiated"){
             log.debug "Camera state has failed to return to completed. Submitting Notification for action"
             if (sendNotify) {
 				sendCameraHealthNotify()
                 }
             iftttSwitch?.on()
             arloIFTTTCheck()
+            }
+            else {
+            log.debug "Camera status is not avaliable to check. Please remove Health check app"
             }
             }
             
