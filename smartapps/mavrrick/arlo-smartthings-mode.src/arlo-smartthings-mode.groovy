@@ -476,7 +476,8 @@ def initialize() {
         subscribe(location, "alarmSystemStatus", modeTriggerEvt)
         }
     if (virtualSwitch) {
-        subscribe(virtualSwitch, "switch.on", modeTriggerEvt) 
+        subscribe(virtualSwitch, "switch.on", modeTriggerEvt)
+        subscribe(virtualSwitch, "switch.off", modeTriggerEvt)
         }
     if (timeSetup) {
     	schedule (fromTime, modeTriggerEvt)
