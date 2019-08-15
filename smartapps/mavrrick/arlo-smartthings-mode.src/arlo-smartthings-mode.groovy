@@ -32,7 +32,7 @@ preferences {
 	page (name: "modeDefine", title: "What will define what the mode is")    
 	page (name: "securityState", title: "What security modes will be used")
 	page (name: "modeRulesetSetup", title: "Define rulesets")
-//    page (name: "modeLightsOpt", title: "Optional Light Setup")
+    page (name: "modeTimeSetup", title: "Day Time Setup")
 //	page (name: "modeCameraSetup", title: "Camera setup")
 //    page (name: "modeAlarmSetup", title: "Siren Setup")
 //    page (name: "notificationSetup", title: "Notification Setup")
@@ -91,11 +91,13 @@ def modeDefine()
 		section("Defin Time criteria")
 		{
             paragraph "If you use the time values please use it alone. It is not currently setup to work with the ST Mode or alarm state."
-			input "timeSetup", "bool", title: "This will enable the mode between these times.", required: false
-            input "fromTime", "time", title: "From", required: false
+//			input "timeSetup", "bool", title: "This will enable the mode between these times.", required: false
+            input "timeSetup", "enum", title: "Type of time rule to setup", required: false, multiple: false, options: ["Time": "Time", "Sunrise": "Sunrise/Sunset"] 
+   			href "modeTimeSetup", title: "Click here to setup your time options", description: "Click here to setup your time options"
+/*            input "fromTime", "time", title: "From", required: false
         	input "toTime", "time", title: "To", required: false
             paragraph "Specify all of the days you wish to use this mode for."
-			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday"]
+			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Sunday": "Sunday", "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday"] */
 		}
         section("Define virtual Switch")
         {
@@ -106,15 +108,42 @@ def modeDefine()
         {
 			input "generalRule", "bool", title: "This is a general rule that does not require validation", required: false
         }
-/*        section("Camera State Management")
-        {
-        input "camerasOn", "capability.videoCapture", title: "What cameras do you want to activate in this mode", multiple: true, required: false
-        input "camerasOff", "capability.videoCapture", title: "What cameras do you want to deactivate in this mode", multiple: true, required: false
-        }*/
+	}
+} 
+
+def modeTimeSetup()
+{
+	dynamicPage(name: "modeTimeSetup", title: "Time Setup options", nextPage: "modeDefine", uninstall: false, install: false)
+	{
+		if (settings.timeSetup == "Time") {
+		section("Select your time setup options below")
+			{
+            paragraph "Use the below options to setup your start and end time" 
+            paragraph "Specify the exact time below if this will be used."
+            input "fromTime", "time", title: "From", required: false
+        	input "toTime", "time", title: "To", required: false            
+            paragraph "Specify all of the days you wish to use this mode for."
+			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Sunday": "Sunday", "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday"]        
+            }
+         }
+        if (settings.timeSetup == "Sunrise") {
+		section("Select your time setup options below")
+			{
+            paragraph "Use the below options to setup rules based on sunset and sunrise." 
+			input "modeStart", "enum", title: "When will mode start", required: false, multiple: false, options: ["Sunrise": "Sunrise", "Sunset": "Sunset"]        
+			input "startOffSet", "number", title: "Turn on this many minutes before sunset", defaultValue: 0
+            paragraph "What offset woud you like to use to activate this Mode"
+			input "modeStop", "enum", title: "When will mode start", required: false, multiple: false, options: ["Sunrise": "Sunrise", "Sunset": "Sunset"]        
+			input "stopOffSet", "number", title: "Turn on this many minutes before sunset", defaultValue: 0
+            paragraph "Specify all of the days you wish to use this mode for."
+			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Sunday": "Sunday", "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday"]        
+            }
+         }
+        section ("Return to Arlo Smartthings Mode setup"){
+            href "modeDefine", title: "Return to the previous menu", description: "Return to the previous menu to complete setup."            
+		}
 	}
 }
-
-
 
 def securityState()
 {
@@ -462,6 +491,7 @@ def installed() {
 def updated() {
 	log.debug "Updated with settings: ${settings}"
 	unsubscribe()
+    unschedule()
 	initialize()
 }
 
@@ -479,9 +509,17 @@ def initialize() {
         subscribe(virtualSwitch, "switch.on", modeTriggerEvt)
         subscribe(virtualSwitch, "switch.off", modeTriggerEvt)
         }
-    if (timeSetup) {
-    	schedule (fromTime, modeTriggerEvt)
-        schedule (toTime, modeTriggerEvt)
+    if (settings.timeSetup == "Time") {
+ 	  	schedule (fromTime, timeModeTrigger)
+       	schedule (toTime, modeNowDeactivate)
+        }
+   	if (settings.timeSetup == "Sunrise") {
+   		if (settings.modeStart == "Sunrise") {
+        	subscribe(location, "sunriseTime", modeTriggerEvt)
+            }
+        if (settings.modeStart == "Sunset") {
+        	subscribe(location, "sunsetTime", modeTriggerEvt)
+        }
         }
    	state.noteTime = now()
     state.noteTime2 = now()
@@ -489,6 +527,7 @@ def initialize() {
     state.noteTime4 = now()
     state.noteTime5 = now()
     state.modeActive = 0
+//    modeTriggerEvt()
 } 
 
 def modeNowActive (){
@@ -619,18 +658,32 @@ def modeNowActive (){
     state.modeActive = 1
 } 
 
-def modeActivateEvent(evt){
-	if (stmode) {
-    		if (evt.value == stmode) {
-    			log.debug "Smartthings mode has been validated. Executing Action"
+def modeNowDeactivate() {
+	log.debug "Updated with settings: ${settings}"
+	unsubscribe()
+	initialize()
+}
+
+def timeModeTrigger(){
+    if (timeSetup) {
+    	def df = new java.text.SimpleDateFormat("EEEE")
+		    df.setTimeZone(location.timeZone)
+		    def day = df.format(new Date())
+		    def dayCheck = days.contains(day)
+		    if (dayCheck) {
+	   	 	def between = timeOfDayIsBetween(fromTime, toTime, new Date(), location.timeZone)
+			if (between) {        	
+    			log.debug "Time Validation successfull"
 			modeNowActive()
-    		}
-            else 
-            log.debug "No longer in proper ST Mode for integration reseting app"
+    	}
+        }
+        	else {
+            log.debug "Time did not validate. No caction"
             unsubscribe()
 			initialize()
             }
-            }
+   }
+}
 
 // Method to activate when a mode defining state changes in Smartthings
 def modeTriggerEvt(evt){
@@ -735,7 +788,7 @@ def modeTriggerEvt(evt){
 			initialize()
             }
     }
-    else if (timeSetup) {
+/*    else if (timeSetup) {
     	def df = new java.text.SimpleDateFormat("EEEE")
 		    df.setTimeZone(location.timeZone)
 		    def day = df.format(new Date())
@@ -752,7 +805,7 @@ def modeTriggerEvt(evt){
             unsubscribe()
 			initialize()
             }
-            }
+            } */
 	else if (virtualSwitch) {
     	def check = virtualSwitch.currentSwitch
 			if (check != "off") {        	
@@ -787,10 +840,10 @@ def modeAction(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture()
     		}
-            else if (camaraSatus == "Initiated") 
+/*            else if (camaraSatus == "Initiated") 
         	{
         	log.debug "Camera is active and recording can not be submitted."
-    		}
+    		} */
             else {
             log.debug "Could not check camera status. Submiting Record"
             arloCapture()
@@ -987,10 +1040,10 @@ def modeAction2(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture2()
     		}
-            else if (camaraSatus2 == "Initiated") 
+/*            else if (camaraSatus2 == "Initiated") 
         	{
         	log.debug "Camera is active and recording can not be submitted."
-    		}
+    		} */
             else {
             log.debug "Could not check camera status. Submiting Record"
             arloCapture2()
@@ -1184,10 +1237,10 @@ def modeAction3(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture3()
     		}
-            else if (camaraSatus3 == "Initiated") 
+/*            else if (camaraSatus3 == "Initiated") 
         	{
         	log.debug "Camera is active and recording can not be submitted."
-    		}
+    		} */
             else {
             log.debug "Could not check camera status. Submiting Record"
             arloCapture3()
@@ -1381,10 +1434,10 @@ def modeAction4(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture4()
     		}
-            else if (camaraSatus4 == "Initiated") 
+/*            else if (camaraSatus4 == "Initiated") 
         	{
         	log.debug "Camera is active and recording can not be submitted."
-    		}
+    		} */
             else {
             log.debug "Could not check camera status. Submiting Record"
             arloCapture4()
@@ -1579,10 +1632,10 @@ def modeAction5(evt){
         	log.debug "Camera is not recording. Submitting clip to record."
     		arloCapture5()
     		}
-            else if (camaraSatus5 == "Initiated") 
+/*            else if (camaraSatus5 == "Initiated") 
         	{
         	log.debug "Camera is active and recording can not be submitted."
-    		}
+    		} */
             else {
             log.debug "Could not check camera status. Submiting Record"
             arloCapture5()
