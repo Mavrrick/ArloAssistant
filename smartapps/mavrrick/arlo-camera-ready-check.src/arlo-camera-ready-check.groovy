@@ -63,6 +63,7 @@ def updated() {
 
 def initialize() {
 	subscribe(cameras, "clipStatus.Initiated", arloCheck)
+	subscribe(cameras, "clip", arloDetails)
 /*	if (frequencyUnit?.equals("hours")) {
 		schedule("0 0 0/${frequency} * * ?", arloRefresh)
 		}
@@ -131,4 +132,13 @@ def sendCameraHealthNotify() {
         sendPush(msg)
     }
     sendNotificationEvent(msg)	
-	   }       
+	   }  
+       
+def arloDetails(evt) {	
+	log.debug "${cameras} clip status data check"
+    def data = parseJson(evt.data)
+    log.debug "event data: ${data}"
+    log.debug "event key1: ${data.clipPath}"
+    log.debug "event key2: ${data.thumbnailPath}"
+    
+}
