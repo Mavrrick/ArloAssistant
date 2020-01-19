@@ -133,10 +133,10 @@ def modeTimeSetup()
 			input "modeStart", "enum", title: "When will mode start", required: false, multiple: false, options: ["Sunrise": "Sunrise", "Sunset": "Sunset"]        
 			input "startOffSet", "number", title: "Turn on this many minutes before sunset", defaultValue: 0
             paragraph "What offset woud you like to use to activate this Mode"
-			input "modeStop", "enum", title: "When will mode start", required: false, multiple: false, options: ["Sunrise": "Sunrise", "Sunset": "Sunset"]        
+			input "modeStop", "enum", title: "When will mode stop", required: false, multiple: false, options: ["Sunrise": "Sunrise", "Sunset": "Sunset"]        
 			input "stopOffSet", "number", title: "Turn on this many minutes before sunset", defaultValue: 0
-            paragraph "Specify all of the days you wish to use this mode for."
-			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Sunday": "Sunday", "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday"]        
+//            paragraph "Specify all of the days you wish to use this mode for."
+//			input "days", "enum", title: "Select Days of the Week", required: false, multiple: true, options: ["Sunday": "Sunday", "Monday": "Monday", "Tuesday": "Tuesday", "Wednesday": "Wednesday", "Thursday": "Thursday", "Friday": "Friday", "Saturday": "Saturday"]        
             }
          }
         section ("Return to Arlo Smartthings Mode setup"){
@@ -515,10 +515,16 @@ def initialize() {
         }
    	if (settings.timeSetup == "Sunrise") {
    		if (settings.modeStart == "Sunrise") {
-        	subscribe(location, "sunriseTime", modeTriggerEvt)
+        	subscribe(location, "sunriseTime", sunriseTimeHandler)
+            sunriseTurnOn(location.currentValue("sunriseTime"))
+            subscribe(location, "sunsetTime", sunsetStopTimeHandler)
+            sunsetTurnOff(location.currentValue("sunsetTime"))
             }
         if (settings.modeStart == "Sunset") {
-        	subscribe(location, "sunsetTime", modeTriggerEvt)
+        	subscribe(location, "sunsetTime", sunsetTimeHandler)
+            sunsetTurnOn(location.currentValue("sunsetTime"))
+        	subscribe(location, "sunriseTime", sunriseStopTimeHandler)
+            sunriseTurnOff(location.currentValue("sunriseTime"))
         }
         }
    	state.noteTime = now()
@@ -529,6 +535,79 @@ def initialize() {
     state.modeActive = 0
 //    modeTriggerEvt()
 } 
+
+def sunsetTimeHandler(evt) {
+    //when I find out the sunset time, schedule the lights to turn on with an offset
+    sunsetTurnOn(evt.value)
+}
+
+def sunsetTurnOn(sunsetString) {
+    //get the Date value for the string
+    def sunsetTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunsetString)
+    //calculate the offset
+    def timeBeforeSunset = new Date(sunsetTime.time - (startOffSet * 60 * 1000))
+    log.debug "Scheduling Start for: $timeBeforeSunset (sunset is $sunsetTime)"
+
+    //schedule this to run one time
+    runOnce(timeBeforeSunset, modeNowActive)
+}
+
+def sunriseTimeHandler(evt) {
+    //when I find out the sunset time, schedule the lights to turn on with an offset
+    sunriseTurnOn(evt.value)
+}
+
+def sunriseTurnOn(sunriseString) {
+    //get the Date value for the string
+    def sunriseTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunriseString)
+
+    //calculate the offset
+    def timeBeforeSunrise = new Date(sunriseTime.time - (startOffSet * 60 * 1000))
+
+    log.debug "Scheduling Start for: $timeBeforeSunrise (sunset is $sunriseTime)"
+
+    //schedule this to run one time
+    runOnce(timeBeforeSunrise, modeNowActive)
+}
+
+def sunsetStopTimeHandler(evt) {
+    //when I find out the sunset time, schedule the lights to turn on with an offset
+    sunsetTurnOff(evt.value)
+}
+
+def sunsetTurnOff(sunsetString) {
+    //get the Date value for the string
+    def sunsetTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunsetString)
+    //calculate the offset
+    def timeBeforeSunset = new Date(sunsetTime.time - (stopOffSet * 60 * 1000))
+    log.debug "Scheduling Turn off for: $timeBeforeSunset (sunset is $sunsetTime)"
+
+    //schedule this to run one time
+    runOnce(timeBeforeSunset, timeStopMode)
+}
+
+def sunriseStopTimeHandler(evt) {
+    //when I find out the sunset time, schedule the lights to turn on with an offset
+    sunriseTurnOff(evt.value)
+}
+
+def timeStopMode(evt) {
+            unsubscribe()
+			initialize()
+}
+
+def sunriseTurnOff(sunriseString) {
+    //get the Date value for the string
+    def sunriseTime = Date.parse("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", sunriseString)
+
+    //calculate the offset
+    def timeBeforeSunrise = new Date(sunriseTime.time - (stopOffSet * 60 * 1000))
+
+    log.debug "Scheduling Turn off for: $timeBeforeSunrise (sunrise is $sunriseTime)"
+
+    //schedule this to run one time
+    runOnce(timeBeforeSunrise, timeStopMode)
+}
 
 def modeNowActive (){
 	if (contact) {
