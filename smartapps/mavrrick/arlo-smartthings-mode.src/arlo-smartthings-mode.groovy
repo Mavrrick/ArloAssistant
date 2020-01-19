@@ -78,7 +78,7 @@ def modeDefine()
 	{
 		section("Defin Smartthings Mode")
 		{
- 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false 
+ 			input "stmode", "mode", title: "Smartthings Mode that must be active", required: false, multiple: true 
 //			input "presense", "capability.presenceSensor", title: "What presense check will be required", required: false
 		}
 
@@ -655,6 +655,7 @@ def modeNowActive (){
     state.noteTime3 = now()
     state.noteTime4 = now()
     state.noteTime5 = now()
+//    state.modeMatch = false
     state.modeActive = 1
 } 
 
@@ -678,7 +679,7 @@ def timeModeTrigger(){
     	}
         }
         	else {
-            log.debug "Time did not validate. No caction"
+            log.debug "Time did not validate. No action"
             unsubscribe()
 			initialize()
             }
@@ -688,9 +689,22 @@ def timeModeTrigger(){
 // Method to activate when a mode defining state changes in Smartthings
 def modeTriggerEvt(evt){
     log.debug "${evt.device} has generated a ${evt.name} event with status of ${evt.value}. Checking to see if in mode for this Smartapp"
-	if (stmode && shmUseState) {
+/*    if (stmode) {
     	def curMode = location.currentMode
-            if (curMode == stmode) {
+            stmode.findAll { it.value ==~ curMode } .each { 
+            state.modeMatch = true
+            log.debug "setting Mode match to true"
+            log.debug "modeMatch = ${state.modeMatch}" }
+*/    
+	if (stmode && shmUseState) {
+          	def curMode = location.currentMode
+/*            stmode.findAll { it.value ==~ curMode } .each { 
+            state.modeMatch = true
+            log.debug "setting Mode match to true"
+            }
+            log.debug "modeMatch = ${state.modeMatch}"
+            if (state.modeMatch == true) { */
+            if (stmode =~ curMode) {
     		def alarmState = location.currentState("alarmSystemStatus")?.value
         	if (alarmState == "stay" && alarmtype1 == 1) {
         	log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
@@ -704,6 +718,11 @@ def modeTriggerEvt(evt){
         		log.debug "Current alarm mode: ${alarmState}.Current SHM Smartthings alarm mode has been validated. Executing Action."
             	modeNowActive()
         	}
+            else {
+            	log.debug "Alarm mode did not match with mode. This action does not apply to this mode"
+                unsubscribe()
+				initialize()
+                }
             }
             else {
             log.debug "Smartthings mode did not validate. This action does not apply to this mode"
@@ -713,20 +732,32 @@ def modeTriggerEvt(evt){
             }
         else if (stmode && adtUseState) {
            	def curMode = location.currentMode
-            if (curMode == stmode) {
-    			def alarmState = panel.currentSecuritySystemStatus
-        	if (alarmState == "armedStay" && alarmtype2 == 1) {
-        		log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
-            	modeNowActive()
+            log.debug "Identified as using Smarthings mode and ADT Alarm Panel"
+/*            stmode.findAll { it.value ==~ curMode } .each { 
+            state.modeMatch = true
+            log.debug "setting Mode match to true"
             }
-        	else if (alarmState == "armedAway" && alarmtype2 == 2) {
-        		log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
-            	modeNowActive()
-        	}
-        	else if (alarmState == "disarmed" && alarmtype2 == 3) {
-        		log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
-            	modeNowActive()
-        	}
+            log.debug "modeMatch = ${state.modeMatch}"
+            if (state.modeMatch == true) { */
+            if (stmode =~ curMode) {
+    				def alarmState = panel.currentSecuritySystemStatus
+        		if (alarmState == "armedStay" && alarmtype2 == 1) {
+        			log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+            		modeNowActive()
+            		}
+        		else if (alarmState == "armedAway" && alarmtype2 == 2) {
+        			log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+            		modeNowActive()
+        		}
+        		else if (alarmState == "disarmed" && alarmtype2 == 3) {
+        			log.debug "Current alarm mode: ${alarmState}.Current ADT Smartthings alarm mode has been validated. Executing Action."
+            		modeNowActive()
+        		}
+                else {
+            	log.debug "Alarm mode did not match with mode. This action does not apply to this mode"
+                unsubscribe()
+				initialize()
+                }
             }
             else {
             	log.debug "Smartthings mode did not validate. This action does not apply to this mode"
@@ -778,12 +809,16 @@ def modeTriggerEvt(evt){
         }
     else if (stmode) {
     	def curMode = location.currentMode
-    		if (curMode == stmode) {
-    			log.debug "Smartthings mode has been validated. Executing Action"
-			modeNowActive()
-    		}
+        log.debug "These modes were configured and are ${stmode} are being reviewed."
+    		if (stmode =~ curMode) {
+/*                stmode.findAll { it.value ==~ curMode } .each { 
+        		log.debug "Found Mode: ID: ${it.value} , Mode found. ${curMode} is current mode." */
+       			modeNowActive()
+                log.debug "mode is active"
+            }
+/*    		} */
             else {
-            log.debug "No longer in proper ST Mode for integration reseting app"
+            log.debug "No longer in proper ST Mode for integration reseting app. Smartthing modes is  ${curMode} does not match ${stmode}."
             unsubscribe()
 			initialize()
             }
