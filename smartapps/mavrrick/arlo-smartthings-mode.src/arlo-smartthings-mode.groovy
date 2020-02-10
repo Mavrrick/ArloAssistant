@@ -210,9 +210,9 @@ def modeRulesetSetup()
 			input("recipients", "contact", title: "Send notifications to?") {
 			input "phone", "phone", title: "Enter a phone number to get SMS.", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
             }
-            input "notifyTimeout", "number", title: "Minimum time between messages", required: false
+            input "notifyTimeout", "number", title: "Minimum seconds between messages", required: false, defaultValue: 1 
 		}
 		if (settings.numOfSets > 1){
        		section("Ruleset 2"){
@@ -248,9 +248,9 @@ def modeRulesetSetup()
 			input ("recipients2", "contact", title: "Send notifications to?") {
 			input "phone2", "phone", title: "Enter a phone number to get SMS.", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush2", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush2", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
             }
-            input "notifyTimeout2", "number", title: "Minimum time between messages", required: false        	
+            input "notifyTimeout2", "number", title: "Minimum seconds between messages", required: false, defaultValue: 1        	
         }
         }
         		if (settings.numOfSets > 2){
@@ -287,9 +287,9 @@ def modeRulesetSetup()
 			input ("recipients3", "contact", title: "Send notifications to?") {
 			input "phone3", "phone", title: "Enter a phone number to get SMS.", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush3", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush3", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
             }
-            input "notifyTimeout3", "number", title: "Minimum time between messages", required: false        	
+            input "notifyTimeout3", "number", title: "Minimum seconds between messages", required: false, defaultValue: 1        	
         }
         }
             if (settings.numOfSets > 3){
@@ -326,9 +326,9 @@ def modeRulesetSetup()
 			input ("recipients4", "contact", title: "Send notifications to?") {
 			input "phone4", "phone", title: "Enter a phone number to get SMS.", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush4", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush4", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
             }
-            input "notifyTimeout4", "number", title: "Minimum time between messages", required: false        	
+            input "notifyTimeout4", "number", title: "Minimum seconds between messages", required: false, defaultValue: 1        	
         }
         }
             if (settings.numOfSets > 4){
@@ -365,9 +365,9 @@ def modeRulesetSetup()
 			input ("recipients5", "contact", title: "Send notifications to?") {
 			input "phone5", "phone", title: "Enter a phone number to get SMS.", required: false
 			paragraph "If outside the US please make sure to enter the proper country code."
-   			input "sendPush5", "bool", title: "Send Push notifications to everyone?", description: "This will tell ADT Tools to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
+   			input "sendPush5", "bool", title: "Send Push notifications to everyone?", description: "This will tell Arlo Assistant to send out push notifications to all users of the location", defaultValue: false, required: true, multiple: false
             }
-            input "notifyTimeout5", "number", title: "Minimum time between messages", required: false        	
+            input "notifyTimeout5", "number", title: "Minimum seconds between messages", required: false, defaultValue: 1         	
         }
         }
 	}
@@ -975,7 +975,7 @@ def modeAction(evt){
 			def timePassed = now() - state.noteTime
         	log.debug "${new Date(state.noteTime)}"
         	log.debug "${timePassed}"
-            if (timePassed > notifyTimeout*60000){
+            if (timePassed > notifyTimeout*1000){
     		sendnotification()
             state.noteTime = now()
             	}
