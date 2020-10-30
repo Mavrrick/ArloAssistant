@@ -534,6 +534,9 @@ def initialize() {
     state.noteTime5 = now()
     state.modeActive = 0
 //    modeTriggerEvt()
+    if (generalRule) {    
+        modeNowActive ()
+        }
 } 
 
 def sunsetTimeHandler(evt) {
