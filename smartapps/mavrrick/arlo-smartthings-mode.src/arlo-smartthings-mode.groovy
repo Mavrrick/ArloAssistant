@@ -492,7 +492,7 @@ def updated() {
 	log.debug "Updated with settings: ${settings}"
 	unsubscribe()
     unschedule()
-	initialize()
+    runIn((5), initialize)
 }
 
 def initialize() {
@@ -506,6 +506,7 @@ def initialize() {
         subscribe(location, "alarmSystemStatus", modeTriggerEvt)
         }
     if (virtualSwitch) {
+    	log.debug "Subscribing to virtualSwitch"
         subscribe(virtualSwitch, "switch.on", modeTriggerEvt)
         subscribe(virtualSwitch, "switch.off", modeTriggerEvt)
         }
@@ -596,7 +597,7 @@ def sunriseStopTimeHandler(evt) {
 
 def timeStopMode(evt) {
             unsubscribe()
-			initialize()
+    	    runIn((5), initialize)
 }
 
 def sunriseTurnOff(sunriseString) {
@@ -742,9 +743,11 @@ def modeNowActive (){
 } 
 
 def modeNowDeactivate() {
+	def delay = 0L
+    delay += 3000
 	log.debug "Updated with settings: ${settings}"
 	unsubscribe()
-	initialize()
+    runIn((5), initialize)
 }
 
 def timeModeTrigger(){
@@ -763,7 +766,7 @@ def timeModeTrigger(){
         	else {
             log.debug "Time did not validate. No action"
             unsubscribe()
-			initialize()
+	        runIn((5), initialize)
             }
    }
 }
@@ -803,13 +806,13 @@ def modeTriggerEvt(evt){
             else {
             	log.debug "Alarm mode did not match with mode. This action does not apply to this mode"
                 unsubscribe()
-				initialize()
+ 		        runIn((5), initialize)
                 }
             }
             else {
             log.debug "Smartthings mode did not validate. This action does not apply to this mode"
             unsubscribe()
-			initialize()
+	        runIn((5), initialize)
             }
             }
         else if (stmode && adtUseState) {
@@ -838,13 +841,13 @@ def modeTriggerEvt(evt){
                 else {
             	log.debug "Alarm mode did not match with mode. This action does not apply to this mode"
                 unsubscribe()
-				initialize()
+ 		        runIn((5), initialize)
                 }
             }
             else {
             	log.debug "Smartthings mode did not validate. This action does not apply to this mode"
                 unsubscribe()
-				initialize()
+ 		        runIn((5), initialize)
                 }
         }
 		else if (shmUseState) {
@@ -865,7 +868,7 @@ def modeTriggerEvt(evt){
             else {
             log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype1}. This is not a valid match. Mode will not execute"
             unsubscribe()
-			initialize()
+	        runIn((5), initialize)
             }
     	}
 	else if (adtUseState) {
@@ -886,7 +889,7 @@ def modeTriggerEvt(evt){
             else {
             log.debug "Current alarm mode: ${alarmState}. Current alarm setup value: ${alarmtype2}. This is not a valid match. Mode will not execute"
             unsubscribe()
-			initialize()
+        	runIn((5), initialize)
             }
         }
     else if (stmode) {
@@ -902,7 +905,7 @@ def modeTriggerEvt(evt){
             else {
             log.debug "No longer in proper ST Mode for integration reseting app. Smartthing modes is  ${curMode} does not match ${stmode}."
             unsubscribe()
-			initialize()
+        	runIn((5), initialize)
             }
     }
 /*    else if (timeSetup) {
@@ -930,9 +933,10 @@ def modeTriggerEvt(evt){
 		modeNowActive()
     	}
     else {
-    log.debug "Virtual swtich is off and not in proper state for mode"
-            unsubscribe()
-			initialize()
+    	log.debug "Virtual swtich is off and not in proper state for mode"
+		unsubscribe()
+        runIn((5), initialize)
+//		initialize()
             }
     }
     else if (generalRule){
@@ -942,7 +946,7 @@ def modeTriggerEvt(evt){
     else {
     log.debug "Smartthings in not in applicable conditions for mode to apply."
             unsubscribe()
-			initialize()
+        	runIn((5), initialize)
     }
 }
 

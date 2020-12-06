@@ -32,9 +32,12 @@ preferences {
 		input "cameras", "capability.videoCapture", multiple: false
         input name: "clipLength", type: "number", title: "Check time", description: "Please Specify time before checking camera status in seconds", required: true, range: "5..600"
         }
+        section ("Virtual Tile Setup"){
+	   		input "createTileDev", "bool", title: "Would you like to create a virtual tile to create your virtual buttons for Mode change functianlity", description: "ADT Tools will attempt to create virtual devices for the mode change functinality", defaultValue: false, required: true, multiple: false
+		}
     section("IFTTT Fix Integration") {
-		input "iftttSwitch", "capability.switch", multiple: false
-        input name: "iftttLength", type: "number", title: "Check time", description: "Time in seconds to validate IFTTT call corrected problem.", required: true, range: "5..600"
+		input "iftttSwitch", "capability.switch", multiple: false, required: false
+        input name: "iftttLength", type: "number", title: "Check time", description: "Time in seconds to validate IFTTT call corrected problem.", required: false, range: "5..600"
 //        input name: "clipLength", type: "number", title: "Check time", description: "Please Specify time before checking camera status in seconds", required: true, range: "5..600"
         }
 
@@ -48,10 +51,15 @@ preferences {
 //          input "sendPush", "enum", title: "Send Push notifications to everyone?", required: false, options: ["Yes", "No"]
 		}
 	}
+    section("Camera to refresh clips"){  
+    		input "camerasIMG", "capability.imageCapture", multiple: false, required: false
+            }
 }
 
 def installed() {
 	log.debug "Installed with settings: ${settings}"
+    state.createTileDev = false
+    state.getLastImageURL= null
 	initialize()
 }
 
@@ -71,6 +79,21 @@ def initialize() {
 	schedule("0 0/${frequency} * * * ?", arloRefresh)
 					} */
 //	schedule("0 0 0/${frequency} * * ?", arloRefresh)
+    if (settings.createTileDev) {
+    	if (state.createTileDev) {
+        log.debug "Virtual buttons already created, Will not create buttons"
+        }
+        else {
+    				log.debug "initialize: Creating virtual button devices ADT Mode Change"
+				addChildDevice("shackrat", "arloPilotCameraTile", "${cameras} - ArloTile", location.hubs[0].id, [
+					"name": "${cameras} - ArloTile",
+					"label": "${cameras} - ArloTile",
+					"completedSetup": true, 					
+				])
+                state?.createTileDev = true
+                log.debug "Arlo Assistant Virtual Tile Device Created"
+                }
+		}
 }
 
 def arloCheck(evt) {	
@@ -78,12 +101,12 @@ def arloCheck(evt) {
 //	log.debug "Refreshing cameras with ${clipLength} second capture"
 //	def clipStatusState = cameras.latestState("clipStatus")
 //	log.debug "Latest Clip status value: ${clipStatusState.value}"
-    runIn(clipLength, arloRefresh)
+//    runIn(clipLength, arloRefresh)
 }
 
 def arloIFTTTCheck() {	
 	log.debug "${cameras} IFTTT Validation of fix action in ${iftttLength}"
-    runIn(iftttLength, arloRefresh)
+//    runIn(iftttLength, arloRefresh)
 }
 
 def arloRefresh() {	
@@ -140,5 +163,39 @@ def arloDetails(evt) {
     log.debug "event data: ${data}"
     log.debug "event key1: ${data.clipPath}"
     log.debug "event key2: ${data.thumbnailPath}"
-    
+    def thumbnail = data.thumbnailPath
+    log.debug "${thumbnail} passing to virtual device now"
+    state?.getLastImageURL = thumbnail
+    camerasIMG?.doRefresh(data.thumbnailPath)    
+}
+
+/*
+	getLastImageURL
+
+	Returns the a pre-signed URL to the Arlo cloud for the latest captured still image.
+
+	Note: Called by a the child device.
+
+	Added: v1.4
+*/
+public def getLastImageURL()
+{
+	if (getLastImageURL == null)
+    	{ 
+        log.debug "Image value is null and will not continue"
+        }
+	else {
+		// Invalidate the cache
+		state.arloDeviceCacheTS = 0
+
+//		def arloDevice = getArloDevice(deviceId)
+//		if (arloDevice)
+//		{
+			log.debug "getLastImageURL: Returning pre-signed image URL ${state.getLastImageUrl}"
+			return state.getLastImageURL
+//		}
+	}
+
+	log.debug "getLastImageURL: Unable to fetch the latest image URL."
+	return false
 }
